@@ -29,11 +29,6 @@ Encoder / Decoder:
 Encode JSON → Base64+zstd for Roblox.
 Decode Base64+zstd → readable JSON.
 
-Features:
-Dashboard — Overview and quick actions.
-Animation Uploader — Video extraction and animation pipeline.
-Encoder / Decoder — Compress and decompress data.
-Profiles — Multiple credential management.
-Statistics — Run history and frame counts.
-Settings — Themes and display options.
-Logs — View all subprocess output.
+LATEST RELEASE: v1.0.0.1
+Fixed zstd encoding/decoding
+Fixed animation uploader getting stuck when moderated
