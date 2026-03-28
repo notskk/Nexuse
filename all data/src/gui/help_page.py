@@ -53,7 +53,7 @@ def load_help_tab(parent, help_path, version_text, discord_callback):
             about_card.pack(fill="x", padx=10, pady=10)
             ctk.CTkLabel(about_card, text="About", font=UIStyle.SUBHEADER_FONT).pack(anchor="w", padx=20, pady=(15, 10))
             
-            about_text = f"Nexus {version_text}\nDeveloped by NotS_K\n\nA tool for Jujutsu Shenanigans featuring many cool tools"
+            about_text = f"Nexuse {version_text}\nDeveloped by NotS_K\n\nFixed various bugs and improved stability.\n\nFor support, join our Discord server."
             ctk.CTkLabel(about_card, text=about_text, font=UIStyle.BODY_FONT, justify="left", text_color=UIStyle.TEXT_SECONDARY_COLOR).pack(anchor="w", padx=20, pady=(0, 15))
 
     except Exception as e:

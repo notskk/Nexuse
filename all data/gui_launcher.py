@@ -63,7 +63,7 @@ try:
     from src.gui.styles import UIStyle
     from src.gui.components import SidebarNavigation, CardFrame, ToolTip
     from src.gui.themes import load_available_themes
-    from src.gui.constants import DISCORD_INVITE, STATUS_COLUMNS, SINNER_LIST, TEAM_ORDER, LOG_MODULES
+    from src.gui.constants import DISCORD_INVITE
     from src.gui.utils import load_json_data, save_json_data, format_log_line_with_time_ago, ensure_schedule_file
     from src.gui.settings_page import load_settings_tab as load_settings_page
     import src.gui.ui_updater as ui_updater_module
@@ -105,7 +105,6 @@ keyboard_handler = None
 LOG_FILENAME = common.LOG_FILENAME
 BASE_PATH = common.BASE_PATH
 HELP_TEXT_PATH = os.path.join(common.BASE_PATH, "Help.txt")
-FUNCTION_RUNNER_PATH = os.path.join(BASE_PATH, "src", "function_runner.py")
 THEME_RESTART_PATH = os.path.join(BASE_PATH, "src", "theme_restart.py")
 PID_FILE = os.path.join(common.BASE_PATH, "nexuse.pid")
 
@@ -175,14 +174,7 @@ def save_settings():
             settings[name] = val
 
     vars_to_save = [
-        "game_monitor", "skip_restshop", "skip_ego_check", "skip_ego_fusion",
-        "skip_sinner_healing", "skip_ego_enhancing", "skip_ego_buying",
-        "prioritize_list_over_status", "debug_image_matches", "hard_mode",
-        "convert_images_to_grayscale", "reconnection_delay", 
-        "reconnect_when_internet_reachable", "good_pc_mode", "click_delay",
-        "retry_count", "claim_on_defeat", "pack_refreshes", "mirror_runs", 
-        "exp_runs", "exp_stage", "threads_runs", "threads_difficulty",
-        "convert_enkephalin_to_modules", "audio_volume", "disable_audio",
+        "audio_volume", "disable_audio",
         "x_offset", "y_offset", "enable_animations"
     ]
     
@@ -225,13 +217,7 @@ def reset_settings_to_defaults():
             default_vars = SharedVars()
 
             fields = [
-                'game_monitor', 'skip_restshop', 'skip_ego_check', 'skip_ego_fusion',
-                'skip_sinner_healing', 'skip_ego_enhancing', 'skip_ego_buying',
-                'prioritize_list_over_status', 'debug_image_matches', 'hard_mode',
-                'convert_images_to_grayscale', 'reconnection_delay', 'reconnect_when_internet_reachable',
-                'good_pc_mode', 'click_delay', 'retry_count', 'claim_on_defeat', 'pack_refreshes', 'mirror_runs', 
-                'exp_runs', 'exp_stage', 'threads_runs', 'threads_difficulty',
-                'convert_enkephalin_to_modules', "audio_volume", "disable_audio",
+                "audio_volume", "disable_audio",
                 "x_offset", "y_offset", "enable_animations"
             ]
             
@@ -431,7 +417,7 @@ def setup_logs_tab():
     global logs_tab_loaded, tab_logs
     if not logs_tab_loaded:
         try:
-            load_logs_page(tab_logs, LOG_FILENAME, LOG_MODULES, config, save_settings, root)
+            load_logs_page(tab_logs, LOG_FILENAME, {}, config, save_settings, root)
             logs_tab_loaded = True
         except Exception as e:
             logger.error(f"Failed to load logs tab: {e}")
@@ -810,12 +796,6 @@ if __name__ == "__main__":
         def delayed_common_init():
             try:
                 app_lifecycle.setup_environment(shared_vars)
-                monitor_index = shared_vars.game_monitor.value
-                common.set_game_monitor(monitor_index)
-
-                w, h = common.get_resolution()
-                if w != 1920 or h != 1080:
-                    messagebox.showwarning("Resolution Warning", "The macro has the best performance on 1920x1080p and they should expect the macro to be completely broken when outside of this resolution.")
 
                 common.CLEAN_LOGS_ENABLED = config['Settings'].get('clean_logs', True)
                 common.initialize_async_logging()

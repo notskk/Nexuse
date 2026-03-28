@@ -28,7 +28,3 @@ Extract to Folder or Extract to ZIP.
 Encoder / Decoder:
 Encode JSON → Base64+zstd for Roblox.
 Decode Base64+zstd → readable JSON.
-
-LATEST RELEASE: v1.0.0.1
-Fixed zstd encoding/decoding
-Fixed animation uploader getting stuck when moderated

@@ -22,29 +22,16 @@ class KeyboardHandler(threading.Thread):
         """Register global hotkeys from config"""
         try:
             keyboard.unhook_all()
-            
-            if 'toggle_mirror' in self.callbacks:
-                 keyboard.add_hotkey('F1', self.callbacks['toggle_mirror'])
 
             if 'stop_all' in self.callbacks:
                 keyboard.add_hotkey('F2', self.callbacks['stop_all'])
 
             shortcuts = self.config.get('Shortcuts', {})
-            
-            mapping = {
-                'mirror_dungeon': 'toggle_mirror',
-                'exp': 'toggle_exp',
-                'threads': 'toggle_threads',
-                'chain_automation': 'toggle_chain',
-                'call_function': 'call_function',
-                'terminate_functions': 'terminate_functions'
-            }
 
-            for key, callback_name in mapping.items():
-                hotkey = shortcuts.get(key)
-                if hotkey and callback_name in self.callbacks:
+            for key, hotkey in shortcuts.items():
+                if hotkey and key in self.callbacks:
                     try:
-                        keyboard.add_hotkey(hotkey, self.callbacks[callback_name])
+                        keyboard.add_hotkey(hotkey, self.callbacks[key])
                     except Exception as e:
                         logger.error(f"Failed to register hotkey {hotkey} for {key}: {e}")
 
