@@ -6,7 +6,7 @@ if getattr(sys, 'frozen', False):
     _meipass = sys._MEIPASS
     _src_dir = os.path.join(_meipass, 'src')
 
-    _WORKERBEE_MODULES = {
+    _Nexuse_MODULES = {
         'mirror', 'mirror_1366', 'mirror_utils', 'mirror_utils_1366',
         'common', 'shared_vars', 'core', 'compiled_runner', 'exp_runner',
         'threads_runner', 'luxcavation_functions', 'battler', 'battlepass_collector',
@@ -18,7 +18,7 @@ if getattr(sys, 'frozen', False):
     class _LooseSourceFinder:
         def find_spec(self, fullname, path, target=None):
             root = fullname.split('.')[0]
-            if root not in _WORKERBEE_MODULES:
+            if root not in _Nexuse_MODULES:
                 return None
 
             parts = fullname.split('.')

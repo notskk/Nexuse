@@ -98,7 +98,7 @@ class LoaderWindow:
         ).pack(anchor='w')
 
         tk.Label(
-            title_block, text='Limbus Company Automation',
+            title_block, text='Roblox Jjs tools',
             font=('Segoe UI', 9), fg=self.MUTED, bg=self.CARD, anchor='w'
         ).pack(anchor='w', pady=(2, 0))
 
@@ -221,11 +221,35 @@ class LoaderWindow:
             pass
 
     def close(self):
+        """Thread-safe close: stops animations, cancels pending callbacks, then destroys."""
+        self._animating = False
+
+        def _do_close():
+            try:
+                # Cancel all pending 'after' callbacks to avoid
+                # "invalid command name" errors on destroyed widgets
+                for after_id in self.root.tk.call('after', 'info'):
+                    try:
+                        self.root.after_cancel(after_id)
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+            try:
+                self.root.quit()
+                self.root.destroy()
+            except Exception:
+                pass
+
         try:
-            self.root.quit()
-            self.root.destroy()
+            self.root.after(0, _do_close)
         except Exception:
-            pass
+            # root already gone — force destroy
+            try:
+                self.root.quit()
+                self.root.destroy()
+            except Exception:
+                pass
 
     def run(self):
         self.root.mainloop()

@@ -1,34 +1,39 @@
-General Usage:
-Select the tab for the activity you want to automate (Mirror Dungeon, Exp, Threads).
-Configure your team and settings, then click Start.
-Use the Dashboard for quick access to common tasks.
-Press F2 to stop all running automations immediately.
+⚠️ IMPORTANT - READ BEFORE USING:
+DO NOT use your main Roblox account. Always use an alt account.
+This tool uploads many assets rapidly which may trigger moderation.
+Make sure your video does NOT contain bannable content (NSFW, extreme
+violence, copyrighted material, etc). Roblox will moderate or ban your
+account for inappropriate uploads. You are responsible for what you upload.
 
-Mirror Dungeon:
-Automates Mirror Dungeon runs.
-- Select your team in the Settings tab.
-- 'Hard Mode': Toggles hard mode dungeon logic.
-- 'Claim Rewards on Defeat': If enabled, claims rewards even if the run is lost.
-- 'Skip Rest Shop': Skips interaction with the shop to save time.
+Create Animation:
+One-click pipeline that does everything automatically:
+  1. Extracts frames from your video
+  2. Uploads all frames to Roblox
+  3. Waits for CDN processing then resolves texture IDs
+  4. Builds the animation timeline and encodes it
+  5. Copies the encoded string to your clipboard
+Set your video, Run ID, and FPS — then click Create Animation.
+Each step has its own progress bar so you can see exactly where it is.
 
-Luxcavation:
-Automates EXP and Thread Luxcavations.
-- EXP: Select the stage and number of runs.
-- Threads: Select difficulty and number of runs.
-- Ensure you have enough Enkephalin modules.
+Profiles:
+Manage multiple Roblox API credentials.
+When creating a new profile, you'll see a safety warning.
+Set an active profile before using Create Animation.
 
-Scheduler:
-Allows scheduling tasks to run automatically at specific times.
-- Add tasks with time (HH:MM), type, and run count.
-- Ensure the application is left open for the scheduler to work.
+Extraction Settings:
+Modes: All Frames, By FPS, By Interval (ms).
+Formats: PNG or JPEG (with quality slider).
+Extract to Folder or Extract to ZIP.
 
-Settings & Profiles:
-- Profiles: Save and load different configurations for different teams or activities.
-- Mouse Offsets: Adjust X/Y offsets if the bot clicks slightly off-target.
-- Display: Select the monitor where the game is running.
+Encoder / Decoder:
+Encode JSON → Base64+zstd for Roblox.
+Decode Base64+zstd → readable JSON.
 
-Troubleshooting:
-- If clicks are offset, try adjusting X/Y offsets in Settings.
-- Ensure the game resolution matches your monitor or is set to 1920x1080.
-- Run the application as Administrator if input is not registering.
-- Check the Logs tab for detailed error messages.
+Features:
+Dashboard — Overview and quick actions.
+Animation Uploader — Video extraction and animation pipeline.
+Encoder / Decoder — Compress and decompress data.
+Profiles — Multiple credential management.
+Statistics — Run history and frame counts.
+Settings — Themes and display options.
+Logs — View all subprocess output.

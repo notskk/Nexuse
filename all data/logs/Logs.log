@@ -1,30 +1,75 @@
-18/03/2026 04:56:05 | common | INFO | detect_monitor_resolution:279 | Detected montior size: 1920x1080
-18/03/2026 04:56:05 | shared_vars | DEBUG | _calculate_coords:106 | Calculated scaled coordinates for grace_of_stars
-18/03/2026 04:56:05 | shared_vars | DEBUG | _calculate_coords:127 | Calculated scaled character positions for character_positions
-18/03/2026 04:56:05 | shared_vars | DEBUG | _calculate_coords:137 | Calculated scaled battle button coordinates for battle_buttons
-18/03/2026 04:56:05 | shared_vars | DEBUG | _calculate_coords:158 | Calculated scaled luxcavation coordinates for luxcavation_coords
-18/03/2026 04:56:05 | shared_vars | INFO | preload_all_coordinates:165 | Preloaded 4 coordinate sets
-18/03/2026 19:19:09 | common | INFO | detect_monitor_resolution:279 | Detected montior size: 1920x1080
-18/03/2026 19:19:46 | common | INFO | detect_monitor_resolution:279 | Detected montior size: 1920x1080
-18/03/2026 19:19:58 | common | INFO | detect_monitor_resolution:279 | Detected montior size: 1920x1080
-18/03/2026 19:20:26 | common | INFO | detect_monitor_resolution:279 | Detected montior size: 1920x1080
-18/03/2026 19:22:13 | common | INFO | detect_monitor_resolution:279 | Detected montior size: 1920x1080
-18/03/2026 20:05:06 | common | INFO | detect_monitor_resolution:279 | Detected montior size: 1920x1080
-18/03/2026 20:07:12 | common | INFO | detect_monitor_resolution:279 | Detected montior size: 1920x1080
-18/03/2026 20:08:34 | common | INFO | detect_monitor_resolution:279 | Detected montior size: 1920x1080
-18/03/2026 20:10:02 | common | INFO | detect_monitor_resolution:279 | Detected montior size: 1920x1080
-18/03/2026 20:10:59 | common | INFO | detect_monitor_resolution:279 | Detected montior size: 1920x1080
-18/03/2026 20:11:47 | common | INFO | detect_monitor_resolution:279 | Detected montior size: 1920x1080
-18/03/2026 20:13:41 | common | INFO | detect_monitor_resolution:279 | Detected montior size: 1920x1080
-18/03/2026 20:14:32 | common | INFO | detect_monitor_resolution:279 | Detected montior size: 1920x1080
-18/03/2026 20:14:58 | common | INFO | detect_monitor_resolution:279 | Detected montior size: 1920x1080
-20/03/2026 19:49:42 | common | INFO | detect_monitor_resolution:279 | Detected montior size: 1920x1080
-20/03/2026 19:49:53 | common | INFO | detect_monitor_resolution:279 | Detected montior size: 1920x1080
-20/03/2026 19:50:54 | common | INFO | detect_monitor_resolution:279 | Detected montior size: 1920x1080
-20/03/2026 19:58:59 | common | INFO | detect_monitor_resolution:279 | Detected montior size: 1920x1080
-20/03/2026 20:07:21 | common | INFO | detect_monitor_resolution:279 | Detected montior size: 1920x1080
-20/03/2026 20:07:41 | common | INFO | detect_monitor_resolution:279 | Detected montior size: 1920x1080
-20/03/2026 20:07:58 | common | INFO | detect_monitor_resolution:279 | Detected montior size: 1920x1080
-20/03/2026 20:08:56 | common | INFO | detect_monitor_resolution:279 | Detected montior size: 1920x1080
-20/03/2026 20:10:40 | common | INFO | detect_monitor_resolution:279 | Detected montior size: 1920x1080
-20/03/2026 20:24:37 | common | INFO | detect_monitor_resolution:279 | Detected montior size: 1920x1080
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing AvifImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing BlpImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing BmpImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing BufrStubImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing CurImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing DcxImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing DdsImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing EpsImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing FitsImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing FliImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing FpxImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:391 | Image: failed to import FpxImagePlugin: No module named 'olefile'
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing FtexImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing GbrImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing GifImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing GribStubImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing Hdf5StubImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing IcnsImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing IcoImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing ImImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing ImtImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing IptcImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing JpegImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing Jpeg2KImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing McIdasImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing MicImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:391 | Image: failed to import MicImagePlugin: No module named 'olefile'
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing MpegImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing MpoImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing MspImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing PalmImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing PcdImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing PcxImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing PdfImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing PixarImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing PngImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing PpmImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing PsdImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing QoiImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing SgiImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing SpiderImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing SunImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing TgaImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing TiffImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing WebPImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing WmfImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing XbmImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing XpmImagePlugin
+28/03/2026 18:25:50 | PIL.Image | DEBUG | init:388 | Importing XVThumbImagePlugin
+28/03/2026 18:25:50 | updater | INFO | check_for_updates:236 | Checking for updates... Local: 'v1.0.0.0', Remote: 'v1.0.1'
+28/03/2026 18:25:50 | updater | DEBUG | check_for_updates:240 | Comparing versions: Local (1, 0, 0, 0) vs Remote (1, 0, 1)
+28/03/2026 18:25:50 | updater | INFO | check_for_updates:243 | Update available: v1.0.0.0 -> v1.0.1
+28/03/2026 18:25:54 | src.shared_vars | INFO | _load_shared_vars:200 | Loading shared variables from configuration
+28/03/2026 18:25:54 | src.shared_vars | WARNING | _load_shared_vars:225 | GUI config file not found at c:\Users\Petul\Downloads\Nexuse_v8 (3)\Nexuse\all data\config\gui_config.json, using GUI values
+28/03/2026 18:25:54 | src.shared_vars | DEBUG | _load_config:46 | Config squad_order not found, using empty dict
+28/03/2026 18:25:54 | src.shared_vars | DEBUG | _load_config:46 | Config delayed_squad_order not found, using empty dict
+28/03/2026 18:25:54 | src.shared_vars | DEBUG | _load_config:46 | Config status_selection not found, using empty dict
+28/03/2026 18:25:54 | src.shared_vars | DEBUG | _load_config:46 | Config exp_team_selection not found, using empty dict
+28/03/2026 18:25:54 | src.shared_vars | DEBUG | _load_config:46 | Config threads_team_selection not found, using empty dict
+28/03/2026 18:25:54 | src.shared_vars | DEBUG | _load_config:46 | Config gui_config not found, using empty dict
+28/03/2026 18:25:54 | src.shared_vars | DEBUG | _load_config:46 | Config pack_priority not found, using empty dict
+28/03/2026 18:25:54 | src.shared_vars | DEBUG | _load_config:46 | Config delayed_pack_priority not found, using empty dict
+28/03/2026 18:25:54 | src.shared_vars | DEBUG | _load_config:46 | Config pack_exceptions not found, using empty dict
+28/03/2026 18:25:54 | src.shared_vars | DEBUG | _load_config:46 | Config delayed_pack_exceptions not found, using empty dict
+28/03/2026 18:25:54 | src.shared_vars | DEBUG | _load_config:46 | Config fusion_exceptions not found, using empty dict
+28/03/2026 18:25:54 | src.shared_vars | DEBUG | _load_config:46 | Config grace_selection not found, using empty dict
+28/03/2026 18:25:54 | src.shared_vars | DEBUG | _load_config:46 | Config card_priority not found, using empty dict
+28/03/2026 18:25:54 | src.shared_vars | INFO | preload_all_configs:79 | Preloaded 13 config files
+28/03/2026 18:25:54 | src.shared_vars | DEBUG | _load_config:46 | Config image_thresholds not found, using empty dict
+28/03/2026 18:25:54 | src.shared_vars | DEBUG | _calculate_coords:109 | Calculated scaled coordinates for grace_of_stars
+28/03/2026 18:25:54 | src.shared_vars | DEBUG | _calculate_coords:130 | Calculated scaled character positions for character_positions
+28/03/2026 18:25:54 | src.shared_vars | DEBUG | _calculate_coords:140 | Calculated scaled battle button coordinates for battle_buttons
+28/03/2026 18:25:54 | src.shared_vars | DEBUG | _calculate_coords:161 | Calculated scaled luxcavation coordinates for luxcavation_coords
+28/03/2026 18:25:54 | src.shared_vars | INFO | preload_all_coordinates:168 | Preloaded 4 coordinate sets
+28/03/2026 18:25:54 | gui_launcher | INFO | setup_environment:49 | Common settings initialized

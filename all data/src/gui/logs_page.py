@@ -35,215 +35,90 @@ def load_logs_tab(parent, log_filename, log_modules, config, save_callback, root
     ctk.CTkLabel(toggles, text="Clean Logs", font=UIStyle.SMALL_FONT).grid(row=0, column=0, padx=(0,2), sticky="e")
     ctk.CTkSwitch(toggles, text="", variable=clean_logs_var, command=toggle_clean_logs, font=UIStyle.SMALL_FONT).grid(row=0, column=1, padx=(0,10))
 
-    logging_enabled_var = ctk.BooleanVar(value=not config['Settings'].get('logging_enabled', True))
-    
-    def toggle_logging():
-        enabled = not logging_enabled_var.get()
-        config['Settings']['logging_enabled'] = enabled
-        
-        if hasattr(common, 'set_logging_enabled'):
-            common.set_logging_enabled(enabled)
-            
-        save_callback()
-
-        if enabled:
-            log_text.configure(state="normal")
-            log_text.insert("end", f"\n--- LOGGING ENABLED ---\n")
-            log_text.configure(state="disabled")
-        else:
-            log_text.configure(state="normal")
-            log_text.insert("end", f"\n--- LOGGING DISABLED ---\n")
-            log_text.configure(state="disabled")
-        log_text.see("end")
-
-    ctk.CTkLabel(toggles, text="Do Not Log", font=UIStyle.SMALL_FONT).grid(row=0, column=2, padx=(0,2), sticky="e") 
-    ctk.CTkSwitch(toggles, text="", variable=logging_enabled_var, command=toggle_logging, font=UIStyle.SMALL_FONT).grid(row=0, column=3, padx=0)
-
-    filters_main_frame = ctk.CTkFrame(filter_card, fg_color="transparent")
-    filters_main_frame.pack(fill="x", expand=True, padx=10, pady=(0, 10))
-
-    levels_frame = ctk.CTkFrame(filters_main_frame, fg_color="transparent")
-    levels_frame.pack(side="left", fill="y", padx=(5, 2))
-    
-    ctk.CTkLabel(levels_frame, text="Log Levels:", font=UIStyle.SMALL_FONT).pack(pady=(5, 0))
+    filter_frame = ctk.CTkFrame(filter_card, fg_color="transparent")
+    filter_frame.pack(fill="x", padx=10, pady=5)
 
     log_filters = {}
     module_filters = {}
 
-    def apply_filter():
-        if 'LogFilters' not in config: config['LogFilters'] = {}
-        if 'ModuleFilters' not in config: config['ModuleFilters'] = {}
-        
-        for level, var in log_filters.items():
-            config['LogFilters'][level.lower()] = var.get()
-            
-        for module, var in module_filters.items():
-            key = module.lower().replace(' ', '_')
-            config['ModuleFilters'][key] = var.get()
-            
-        save_callback()
-        load_log_file(reload_all=True)
-
-    level_grid_frame = ctk.CTkFrame(levels_frame, fg_color="transparent")
-    level_grid_frame.pack(fill="x", padx=5, pady=5)
-
-    levels = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
-    for i, level in enumerate(levels):
-        default = config.get('LogFilters', {}).get(level.lower(), False if level in ["DEBUG", "INFO"] else True)
-        var = ctk.BooleanVar(value=default)
+    levels = ["DEBUG", "INFO", "WARNING", "ERROR"]
+    for level in levels:
+        var = ctk.BooleanVar(value=(level != "DEBUG"))
         log_filters[level] = var
-        
-        chk = ctk.CTkCheckBox(
-            master=level_grid_frame,
-            text=level,
-            variable=var,
-            command=apply_filter,
-            font=(UIStyle.FONT_FAMILY, 10)
-        )
-        row = i % 3
-        col = i // 3
-        chk.grid(row=row, column=col, sticky="w", padx=2, pady=1)
+        ctk.CTkCheckBox(filter_frame, text=level, variable=var, font=UIStyle.SMALL_FONT, 
+                        command=lambda: load_log_file(reload_all=True)).pack(side="left", padx=5)
 
-    modules_frame = ctk.CTkFrame(filters_main_frame, fg_color="transparent")
-    modules_frame.pack(side="left", fill="both", expand=True, padx=(2, 5))
-    
-    ctk.CTkLabel(modules_frame, text="Modules:", font=UIStyle.SMALL_FONT).pack(pady=(5, 0))
+    module_frame = ctk.CTkFrame(filter_card, fg_color="transparent")
+    module_frame.pack(fill="x", padx=10, pady=(0, 10))
 
-    module_scroll_frame = ctk.CTkScrollableFrame(modules_frame, height=60)
-    module_scroll_frame.pack(fill="both", expand=True, padx=5, pady=5)
+    for module_name in log_modules:
+        var = ctk.BooleanVar(value=True)
+        module_filters[module_name] = var
+        ctk.CTkCheckBox(module_frame, text=module_name, variable=var, font=UIStyle.SMALL_FONT,
+                        command=lambda: load_log_file(reload_all=True)).pack(side="left", padx=5)
 
-    modules_per_column = max(3, len(log_modules) // 4)
-    
-    for i, module in enumerate(log_modules):
-        col = i // modules_per_column
-        row = i % modules_per_column
+    log_text = ctk.CTkTextbox(parent, font=("Consolas", 11), fg_color="#0a0a0a", text_color="#d0d0d0", corner_radius=0)
+    log_text.pack(fill="both", expand=True, padx=10, pady=(0, 10))
+    log_text.configure(state="disabled")
 
-        key = module.lower().replace(' ', '_')
-        default_val = config.get('ModuleFilters', {}).get(key, True)
-        
-        var = ctk.BooleanVar(value=default_val)
-        module_filters[module] = var
-        
-        chk = ctk.CTkCheckBox(
-            master=module_scroll_frame,
-            text=module,
-            variable=var,
-            command=apply_filter,
-            font=(UIStyle.FONT_FAMILY, 10)
-        )
-        chk.grid(row=row, column=col, sticky="w", padx=2, pady=1)
-
-    module_filters["Other"] = ctk.BooleanVar(value=True)
-
-    log_card = CardFrame(parent)
-    log_card.pack(fill="both", expand=True, padx=10, pady=(5, 10))
-
-    log_text = ctk.CTkTextbox(log_card, font=("Consolas", 12), state="disabled")
-    log_text.pack(fill="both", expand=True, padx=5, pady=5)
-
-    button_frame = ctk.CTkFrame(log_card, fg_color="transparent")
-    button_frame.pack(fill="x", padx=10, pady=(0, 10))
-
-    def clear_gui_logs():
-        log_text.configure(state="normal")
-        log_text.delete("1.0", "end")
-        log_text.configure(state="disabled")
-
-    def clear_log_file():
-        try:
-            with open(log_filename, 'w') as f:
-                f.write("")
-            load_log_file(reload_all=True)
-        except Exception as e:
-            messagebox.showerror("Error", f"Failed to clear log file: {e}")
-
-    ctk.CTkButton(button_frame, text="Clear GUI", command=clear_gui_logs, width=100, height=UIStyle.BUTTON_HEIGHT, font=UIStyle.BODY_FONT,
-                  fg_color=UIStyle.BUTTON_COLOR, hover_color=UIStyle.BUTTON_HOVER_COLOR, 
-                  border_width=1, border_color=UIStyle.BUTTON_BORDER_COLOR,
-                  corner_radius=UIStyle.CORNER_RADIUS).pack(side="left", padx=5, pady=5)
-    ctk.CTkButton(button_frame, text="Clear File", command=clear_log_file, width=100, height=UIStyle.BUTTON_HEIGHT, font=UIStyle.BODY_FONT,
-                  fg_color=UIStyle.BUTTON_COLOR, hover_color=UIStyle.BUTTON_HOVER_COLOR, 
-                  border_width=1, border_color=UIStyle.BUTTON_BORDER_COLOR,
-                  corner_radius=UIStyle.CORNER_RADIUS).pack(side="left", padx=5, pady=5)
-    ctk.CTkButton(button_frame, text="Reload", command=lambda: load_log_file(reload_all=True), width=100, height=UIStyle.BUTTON_HEIGHT, font=UIStyle.BODY_FONT,
-                  fg_color=UIStyle.BUTTON_COLOR, hover_color=UIStyle.BUTTON_HOVER_COLOR, 
-                  border_width=1, border_color=UIStyle.BUTTON_BORDER_COLOR,
-                  corner_radius=UIStyle.CORNER_RADIUS).pack(side="left", padx=5, pady=5)
-
-    auto_reload_var = ctk.BooleanVar(value=True)
-    ctk.CTkSwitch(button_frame, text="Auto-reload", variable=auto_reload_var, font=UIStyle.BODY_FONT).pack(side="right", padx=5, pady=5)
-
-    last_file_position = 0
-    _size_warning_shown = [False]
-    _TWO_GB = 2 * 1024 * 1024 * 1024
-
-    def check_log_size_and_warn():
-        if _size_warning_shown[0]:
-            return
-        try:
-            if os.path.exists(log_filename) and os.path.getsize(log_filename) >= _TWO_GB:
-                _size_warning_shown[0] = True
-                if messagebox.askyesno(
-                    "Log File Too Large",
-                    "The log file has exceeded 2 GB.\n\nWould you like to clear it now?"
-                ):
-                    clear_log_file()
-        except Exception:
-            pass
-
-    def should_display_line(line):
-        for module, pattern in log_modules.items():
-            if f" | {pattern} | " in line:
-                if not module_filters[module].get():
-                    return False
-                break
-        else:
-            if not module_filters["Other"].get():
-                return False
-        if " | DIRTY" in line and clean_logs_var.get():
-            return False
-            
-        return True
+    log_handler = OptimizedLogHandler(log_text, log_filters, module_filters, log_modules)
+    logging.getLogger().addHandler(log_handler)
 
     def load_log_file(reload_all=False):
-        nonlocal last_file_position
-        try:
-            if not os.path.exists(log_filename): return
-            
-            current_size = os.path.getsize(log_filename)
-            if reload_all or current_size < last_file_position:
-                log_text.configure(state="normal")
-                log_text.delete("1.0", "end")
-                last_file_position = 0
-            
-            if current_size > last_file_position:
-                with open(log_filename, 'r', encoding='utf-8', errors='replace') as f:
-                    f.seek(last_file_position)
-                    new_lines = f.readlines()
-                last_file_position = current_size
-                
-                if new_lines:
-                    log_text.configure(state="normal")
-                    batch_text = "".join([format_log_line_with_time_ago(line) for line in new_lines if should_display_line(line)])
-                    if batch_text:
-                        log_text.insert("end", batch_text)
-                        line_count = int(log_text.index("end-1c").split(".")[0])
-                        if line_count > 500:
-                            log_text.delete("1.0", f"{line_count - 500}.0")
-                        log_text.see("end")
-                    log_text.configure(state="disabled")
-        except Exception:
-            pass
-
-    def check_log_file_changes():
-        if auto_reload_var.get():
+        log_text.configure(state="normal")
+        log_text.delete("1.0", "end")
+        
+        if os.path.exists(log_filename):
             try:
-                if os.path.exists(log_filename):
-                    load_log_file(reload_all=False)
-            except Exception:
-                pass
-        root.after(200, check_log_file_changes)
+                with open(log_filename, 'r', encoding='utf-8', errors='ignore') as f:
+                    lines = f.readlines()[-500:]
+                
+                for line in lines:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    
+                    show = True
+                    for level in levels:
+                        if f"| {level} |" in line and not log_filters[level].get():
+                            show = False
+                            break
+                    
+                    if show and common.CLEAN_LOGS_ENABLED and "| DIRTY" in line:
+                        show = False
+                    
+                    if show:
+                        display_line = line.replace(" | DIRTY", "")
+                        formatted = format_log_line_with_time_ago(display_line)
+                        log_text.insert("end", formatted + "\n")
+                
+            except Exception as e:
+                log_text.insert("end", f"Error loading log file: {e}\n")
+        
+        log_text.see("end")
+        log_text.configure(state="disabled")
 
-    check_log_size_and_warn()
-    load_log_file(reload_all=True)
-    check_log_file_changes()
+    load_log_file()
+
+    btn_frame = ctk.CTkFrame(parent, fg_color="transparent")
+    btn_frame.pack(fill="x", padx=10, pady=(0, 10))
+    
+    ctk.CTkButton(btn_frame, text="Refresh", command=lambda: load_log_file(reload_all=True), 
+                  height=UIStyle.BUTTON_HEIGHT, font=UIStyle.BODY_FONT,
+                  fg_color=UIStyle.BUTTON_COLOR, hover_color=UIStyle.BUTTON_HOVER_COLOR,
+                  border_width=1, border_color=UIStyle.BUTTON_BORDER_COLOR,
+                  corner_radius=UIStyle.CORNER_RADIUS).pack(side="left", padx=5)
+    
+    def clear_logs():
+        if messagebox.askyesno("Clear Logs", "Are you sure you want to clear the log file?"):
+            try:
+                with open(log_filename, 'w') as f:
+                    f.write("")
+                load_log_file(reload_all=True)
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to clear logs: {e}")
+    
+    ctk.CTkButton(btn_frame, text="Clear Logs", command=clear_logs, 
+                  height=UIStyle.BUTTON_HEIGHT, font=UIStyle.BODY_FONT,
+                  fg_color="#c42b1c", hover_color="#8f1f14",
+                  corner_radius=UIStyle.CORNER_RADIUS).pack(side="left", padx=5)

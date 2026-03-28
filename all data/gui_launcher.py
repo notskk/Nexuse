@@ -69,18 +69,13 @@ try:
     import src.gui.ui_updater as ui_updater_module
     import src.gui.app_lifecycle as app_lifecycle
     from src.gui.statistics_page import load_statistics_tab as load_statistics_page
-    from src.gui.schedule_page import load_schedule_tab as load_schedule_page
-    from src.gui.others_page import load_others_tab as load_others_page
     from src.gui.logs_page import load_logs_tab as load_logs_page
     from src.gui.help_page import load_help_tab as load_help_page
-    from src.gui.mirror_page import load_mirror_tab as load_mirror_page
-    from src.gui.exp_page import load_exp_tab as load_exp_page
-    from src.gui.threads_page import load_threads_tab as load_threads_page
+    from src.gui.animation_uploader_page import load_animation_uploader_page
+    from src.gui.encoder_page import load_encoder_page
+    from src.gui.profiles_page import load_profiles_page
     from src.gui.dashboard_page import load_dashboard_tab as load_dashboard_page
-    import src.gui.process_handler as process_handler
-    import src.gui.chain_automation as chain_automation
     from src.gui.keyboard_handler import KeyboardHandler
-    from src.gui.scheduler_handler import SchedulerHandler
     log_debug("Modules imported successfully")
 
 except Exception as e:
@@ -105,7 +100,7 @@ sidebar = None
 shared_vars = None
 config = None
 keyboard_handler = None
-scheduler_handler = None
+
 
 LOG_FILENAME = common.LOG_FILENAME
 BASE_PATH = common.BASE_PATH
@@ -142,11 +137,9 @@ def get_display_version():
     return "v2.0"
 
 def get_running_process_name():
-    return process_handler.get_running_process_name()
+    return None
 
 def run_scheduler_check():
-    if scheduler_handler:
-        scheduler_handler.check_scheduler()
     if root:
         root.after(5000, run_scheduler_check)
 
@@ -260,78 +253,7 @@ def stop_running_process():
     if ui_context and 'status_label' in ui_context:
         ui_context['status_label'].configure(text="Stopping...", text_color="orange")
 
-    def _stop_thread():
-        if chain_automation.chain_running:
-            chain_automation.stop_chain_automation(ui_context)
-        process_handler.cleanup_processes()
-
-    threading.Thread(target=_stop_thread, daemon=True).start()
-
-def kill_battlepass():
-    """Kill Battlepass Collector subprocess"""
-    if process_handler.battlepass_process:
-        process_handler.cleanup_processes()
-
-def start_mirror_dungeon(runs=None):
-    try:
-        save_settings() 
-        
-        if runs is None or runs == 999999:
-            runs = int(config.get("Settings", {}).get("mirror_runs", 1))
-            log_debug(f"Starting Mirror Dungeon with {runs} runs (from config)")
-        
-        if process_handler.start_mirror_dungeon(shared_vars, runs=runs):
-            if 'mirror_start_button' in ui_context and ui_context['mirror_start_button']:
-                ui_context['mirror_start_button'].configure(text="Stop", command=stop_running_process, fg_color="#c42b1c", hover_color="#8f1f14")
-            if 'status_label' in ui_context and ui_context['status_label']:
-                ui_context['status_label'].configure(text="Running: Mirror Dungeon", text_color=UIStyle.ACCENT_COLOR)
-    except Exception as e:
-        logger.error(f"Failed to start Mirror Dungeon: {e}")
-
-def start_exp_luxcavation():
-    try:
-        if 'exp_stage_var' in ui_context and ui_context['exp_stage_var']:
-            stage_val = ui_context['exp_stage_var'].get()
-            if stage_val != "latest":
-                shared_vars.exp_stage.value = int(stage_val)
-            config['Settings']['exp_stage'] = stage_val
-        if 'exp_runs_entry' in ui_context and ui_context['exp_runs_entry']:
-            try:
-                shared_vars.exp_runs.value = int(ui_context['exp_runs_entry'].get())
-            except ValueError:
-                pass
-        save_settings()
-        if process_handler.start_exp_luxcavation(shared_vars):
-            if 'exp_start_button' in ui_context and ui_context['exp_start_button']:
-                ui_context['exp_start_button'].configure(text="Stop", command=stop_running_process, fg_color="#c42b1c", hover_color="#8f1f14")
-            if 'status_label' in ui_context and ui_context['status_label']:
-                ui_context['status_label'].configure(text="Running: Luxcavation (EXP)", text_color=UIStyle.ACCENT_COLOR)
-    except Exception as e:
-        logger.error(f"Failed to start EXP Luxcavation: {e}")
-
-def start_thread_luxcavation():
-    try:
-        if 'threads_difficulty_var' in ui_context and ui_context['threads_difficulty_var']:
-            diff_val = ui_context['threads_difficulty_var'].get()
-            if diff_val != "latest":
-                shared_vars.threads_difficulty.value = int(diff_val)
-            config['Settings']['threads_difficulty'] = diff_val
-        if 'threads_runs_entry' in ui_context and ui_context['threads_runs_entry']:
-            try:
-                shared_vars.threads_runs.value = int(ui_context['threads_runs_entry'].get())
-            except ValueError:
-                pass
-        save_settings()
-        if process_handler.start_thread_luxcavation(shared_vars):
-            if 'threads_start_button' in ui_context and ui_context['threads_start_button']:
-                ui_context['threads_start_button'].configure(text="Stop", command=stop_running_process, fg_color="#c42b1c", hover_color="#8f1f14")
-            if 'status_label' in ui_context and ui_context['status_label']:
-                ui_context['status_label'].configure(text="Running: Luxcavation (Thread)", text_color=UIStyle.ACCENT_COLOR)
-    except Exception as e:
-        logger.error(f"Failed to start Thread Luxcavation: {e}")
-
-def start_chain_automation():
-    chain_automation.start_chain_automation(ui_context, shared_vars)
+    pass  # No game processes to stop
 
 def toggle_compact_mode():
     global is_compact_mode, previous_geometry
@@ -355,52 +277,6 @@ def toggle_compact_mode():
         root.geometry(previous_geometry)
         root.resizable(True, True)
         root.title(original_title)
-
-def terminate_functions():
-    process_handler.terminate_functions()
-    if ui_context.get('function_terminate_button'):
-        ui_context['function_terminate_button'].configure(state="disabled")
-
-def call_function():
-    """Call a function using function_runner.py"""
-    function_name = ui_context['function_entry'].get().strip()
-    if not function_name:
-        messagebox.showerror("Invalid Input", "Please enter a function to call.")
-        return
-    
-    python_cmd = sys.executable
-    process_handler.call_function(function_name, BASE_PATH, python_cmd)
-    
-    if 'function_terminate_button' in ui_context and ui_context['function_terminate_button']:
-        ui_context['function_terminate_button'].configure(state="normal")
-
-def start_battle():
-    python_cmd = sys.executable
-    process_handler.start_battle(BASE_PATH, python_cmd)
-
-def toggle_mirror_dungeon():
-    if process_handler.process and process_handler.process.is_alive():
-        stop_running_process()
-    else:
-        start_mirror_dungeon()
-
-def toggle_exp():
-    if process_handler.exp_process and process_handler.exp_process.is_alive():
-        stop_running_process()
-    else:
-        start_exp_luxcavation()
-
-def toggle_threads():
-    if process_handler.threads_process and process_handler.threads_process.is_alive():
-        stop_running_process()
-    else:
-        start_thread_luxcavation()
-
-def toggle_chain():
-    if chain_automation.chain_running:
-        chain_automation.stop_chain_automation(ui_context)
-    else:
-        start_chain_automation()
 
 def restart_with_theme(theme_name):
     """Restart application to apply theme"""
@@ -428,13 +304,7 @@ def perform_cleanup():
         except Exception:
             pass
         
-        try:
-            if chain_automation.chain_running:
-                chain_automation.stop_chain_automation(None)
-            else:
-                process_handler.cleanup_processes()
-        except Exception as e:
-            print(f"Error killing processes: {e}")
+        # No game processes to clean up
         
         try:
             for handler in logging.getLogger().handlers:
@@ -448,17 +318,7 @@ def perform_cleanup():
         except Exception as e:
             pass
         
-        try:
-            if process_handler.process and hasattr(process_handler.process, '_target') and process_handler.process._target:
-                import threading
-                for thread in threading.enumerate():
-                    if thread.name.startswith('Thread-') and thread.daemon and thread.is_alive():
-                        try:
-                            thread._stop()
-                        except:
-                            pass
-        except Exception:
-            pass
+        # No game threads to stop
             
     except Exception as e:
         logger.error(f"Error during cleanup: {e}")
@@ -587,35 +447,38 @@ def load_dashboard_tab():
         logger.error(f"Failed to load dashboard tab: {e}")
         log_debug(f"Failed to load dashboard tab: {e}")
 
-def load_mirror_tab():
+animation_uploader_tab_loaded = False
+def load_animation_uploader_tab():
+    global animation_uploader_tab_loaded
+    if animation_uploader_tab_loaded:
+        return
     try:
-        load_mirror_page(tab_md, config, shared_vars, callbacks, ui_context, BASE_PATH, save_settings)
+        load_animation_uploader_page(tab_animation_uploader, BASE_PATH)
+        animation_uploader_tab_loaded = True
     except Exception as e:
-        logger.error(f"Failed to load mirror tab: {e}")
+        logger.error(f"Failed to load animation uploader tab: {e}")
 
-def load_exp_tab():
+encoder_tab_loaded = False
+def load_encoder_tab():
+    global encoder_tab_loaded
+    if encoder_tab_loaded:
+        return
     try:
-        load_exp_page(tab_exp, config, shared_vars, callbacks, ui_context, BASE_PATH, save_settings)
+        load_encoder_page(tab_encoder, BASE_PATH)
+        encoder_tab_loaded = True
     except Exception as e:
-        logger.error(f"Failed to load exp tab: {e}")
+        logger.error(f"Failed to load encoder tab: {e}")
 
-def load_threads_tab():
+profiles_tab_loaded = False
+def load_profiles_tab():
+    global profiles_tab_loaded
+    if profiles_tab_loaded:
+        return
     try:
-        load_threads_page(tab_threads, config, shared_vars, callbacks, ui_context, BASE_PATH, save_settings)
+        load_profiles_page(tab_profiles, BASE_PATH)
+        profiles_tab_loaded = True
     except Exception as e:
-        logger.error(f"Failed to load threads tab: {e}")
-
-def load_schedule_tab():
-    try:
-        load_schedule_page(tab_schedule, BASE_PATH)
-    except Exception as e:
-        logger.error(f"Failed to load schedule tab: {e}")
-
-def load_others_tab():
-    try:
-        load_others_page(tab_others, config, callbacks, ui_context)
-    except Exception as e:
-        logger.error(f"Failed to load others tab: {e}")
+        logger.error(f"Failed to load profiles tab: {e}")
 
 def load_statistics_tab():
     try:
@@ -832,12 +695,10 @@ if __name__ == "__main__":
         sidebar = SidebarNavigation(sidebar_frame, content_area, shared_vars)
 
         tab_dashboard = sidebar.add_page("Dashboard")
-        tab_md = sidebar.add_page("Mirror Dungeon")
-        tab_exp = sidebar.add_page("Exp")
-        tab_threads = sidebar.add_page("Threads")
-        tab_schedule = sidebar.add_page("Schedule")
-        tab_others = sidebar.add_page("Others")
+        tab_animation_uploader = sidebar.add_page("Animation Uploader")
+        tab_encoder = sidebar.add_page("Encoder / Decoder")
         tab_statistics = sidebar.add_page("Statistics")
+        tab_profiles = sidebar.add_page("Profiles")
         tab_settings = sidebar.add_page("Settings")
         tab_logs = sidebar.add_page("Logs")
         tab_help = sidebar.add_page("Help")
@@ -869,18 +730,7 @@ if __name__ == "__main__":
         sidebar.show_page = _lazy_show_page_wrapper
 
         callbacks = {
-            'toggle_mirror': toggle_mirror_dungeon,
-            'start_mirror': start_mirror_dungeon,
-            'toggle_exp': toggle_exp,
-            'start_exp': start_exp_luxcavation,
-            'toggle_threads': toggle_threads,
-            'start_threads': start_thread_luxcavation,
             'stop_all': stop_running_process,
-            'toggle_chain': toggle_chain,
-            'start_chain': start_chain_automation,
-            'call_function': call_function,
-            'terminate_functions': terminate_functions,
-            'battle': start_battle,
             'load_statistics_tab': load_statistics_tab,
             'save_settings': save_settings
         }
@@ -892,7 +742,7 @@ if __name__ == "__main__":
 
         log_debug("Initializing handlers...")
         keyboard_handler = KeyboardHandler(safe_keyboard_callbacks, config)
-        scheduler_handler = SchedulerHandler(BASE_PATH, shared_vars, callbacks)
+        # Scheduler removed (game-specific)
 
         keyboard_handler.start()
 
@@ -905,9 +755,9 @@ if __name__ == "__main__":
 
         log_debug("Loading initial tabs...")
         load_dashboard_tab()
-        load_mirror_tab()
-        load_exp_tab()
-        load_threads_tab()
+        load_animation_uploader_tab()
+        load_encoder_tab()
+        load_profiles_tab()
         setup_help_tab()
         log_debug("Initial tabs loaded")
 
@@ -937,9 +787,6 @@ if __name__ == "__main__":
             try:
                 log_debug("Initializing application logic...")
                 
-                ensure_schedule_file(BASE_PATH)
-                load_schedule_tab()
-                load_others_tab()
                 load_statistics_tab()
 
                 root.after(500, load_settings_tab)

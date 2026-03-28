@@ -5,8 +5,8 @@ Set FSO = CreateObject("Scripting.FileSystemObject")
 CurrentPath = FSO.GetParentFolderName(WScript.ScriptFullName)
 
 IconPath = CurrentPath & "\all data\app_icon.ico"
-TargetPath = CurrentPath & "\all data\WorkerBee.vbs"
-ShortcutPath = CurrentPath & "\WorkerBee.lnk"
+TargetPath = CurrentPath & "\all data\Nexuse.vbs"
+ShortcutPath = CurrentPath & "\Nexuse.lnk"
 
 Set Link = Shell.CreateShortcut(ShortcutPath)
 Link.TargetPath = TargetPath
@@ -14,7 +14,7 @@ Link.IconLocation = IconPath
 Link.WindowStyle = 7 
 Link.Save
 
-MsgBox "Shortcut created successfully! You can now use 'WorkerBee'.", 64, "Installation Complete"
+MsgBox "Shortcut created successfully! You can now use 'Nexuse'.", 64, "Installation Complete"
 
 ' Use cmd to delete the file after a short delay to ensure the script has terminated
 Shell.Run "cmd /c ping 127.0.0.1 -n 2 > nul & del """ & WScript.ScriptFullName & """", 0, False
