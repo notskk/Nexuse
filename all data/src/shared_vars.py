@@ -1,0 +1,251 @@
+import os
+import json
+import logging
+from threading import Lock
+
+def get_base_path():
+    import sys
+    if getattr(sys, 'frozen', False):
+        return os.path.dirname(sys.executable)
+    else:
+        folder_path = os.path.dirname(os.path.abspath(__file__))
+        if os.path.basename(folder_path) == 'src':
+            return os.path.dirname(folder_path)
+        return folder_path
+
+BASE_PATH = get_base_path()
+
+logger = logging.getLogger(__name__)
+
+_config_cache = {}
+_cache_lock = Lock()
+_scaled_coords_cache = {}
+
+class ConfigCache:
+    
+    @staticmethod
+    def get_config(config_name):
+        with _cache_lock:
+            if config_name not in _config_cache:
+                ConfigCache._load_config(config_name)
+            return _config_cache.get(config_name, {})
+    
+    @staticmethod
+    def _load_config(config_name):
+        try:
+            import sys as _sys
+            config_path = os.path.join(BASE_PATH, "config", f"{config_name}.json")
+            if not os.path.exists(config_path) and getattr(_sys, 'frozen', False):
+                config_path = os.path.join(_sys._MEIPASS, "config", f"{config_name}.json")
+            if os.path.exists(config_path):
+                with open(config_path, 'r') as f:
+                    _config_cache[config_name] = json.load(f)
+                logger.debug(f"Loaded config {config_name} into cache")
+            else:
+                _config_cache[config_name] = {}
+                logger.debug(f"Config {config_name} not found, using empty dict")
+        except Exception as e:
+            logger.error(f"Error loading config {config_name}: {e}")
+            _config_cache[config_name] = {}
+    
+    @staticmethod
+    def reload_config(config_name):
+        with _cache_lock:
+            if config_name in _config_cache:
+                del _config_cache[config_name]
+            ConfigCache._load_config(config_name)
+    
+    @staticmethod
+    def reload_all():
+        with _cache_lock:
+            config_names = list(_config_cache.keys())
+            _config_cache.clear()
+            for config_name in config_names:
+                ConfigCache._load_config(config_name)
+    
+    @staticmethod
+    def preload_all_configs():
+        config_files = [
+            "squad_order", "delayed_squad_order", "status_selection", 
+            "exp_team_selection", "threads_team_selection",
+            "gui_config", "pack_priority", "delayed_pack_priority",
+            "pack_exceptions", "delayed_pack_exceptions", "fusion_exceptions",
+            "grace_selection", "card_priority"
+        ]
+        with _cache_lock:
+            for config_name in config_files:
+                if config_name not in _config_cache:
+                    ConfigCache._load_config(config_name)
+        logger.info(f"Preloaded {len(config_files)} config files")
+
+        ConfigCache._load_config("image_thresholds")
+
+class ScaledCoordinates:
+    
+    @staticmethod
+    def get_scaled_coords(coord_set_name):
+        if coord_set_name not in _scaled_coords_cache:
+            ScaledCoordinates._calculate_coords(coord_set_name)
+        return _scaled_coords_cache.get(coord_set_name, {})
+    
+    @staticmethod
+    def _calculate_coords(coord_set_name):
+        import common
+        
+        if coord_set_name == "grace_of_stars":
+            GRACE_NAMES_ORDERED = [
+                "Star of the Beginning", "Cumulating Starcloud", "Interstellar Travel", "Star Shower", "Binary Star Shop",
+                "Moon Star Shop", "Favor of the Nebula", "Starlight Guidance", "Chance Comet", "Perfected Possibility"
+            ]
+            scaled_coords = {}
+            for i, name in enumerate(GRACE_NAMES_ORDERED):
+                col, row = i % 5, i // 5
+                gx = 335 + 297 * col
+                gy = 375 + 357 * row
+                scaled_coords[name] = common.scale_coordinates_1080p(gx, gy)
+                scaled_coords[f"{name}|left"]  = common.scale_coordinates_1080p(gx - 60, gy + 155)
+                scaled_coords[f"{name}|right"] = common.scale_coordinates_1080p(gx + 60, gy + 155)
+            _scaled_coords_cache[coord_set_name] = scaled_coords
+            logger.debug(f"Calculated scaled coordinates for {coord_set_name}")
+        
+        elif coord_set_name == "character_positions":
+            base_coords = {
+                "yisang": (580, 500),
+                "faust": (847, 500),
+                "donquixote": (1113, 500),
+                "ryoshu": (1380, 500),
+                "meursault": (1647, 500),
+                "honglu": (1913, 500),
+                "heathcliff": (580, 900),
+                "ishmael": (847, 900),
+                "rodion": (1113, 900),
+                "sinclair": (1380, 900),
+                "outis": (1647, 900),
+                "gregor": (1913, 900)
+            }
+            scaled_coords = {}
+            for name, (x, y) in base_coords.items():
+                scaled_coords[name] = common.scale_coordinates_1440p(x, y)
+            _scaled_coords_cache[coord_set_name] = scaled_coords
+            logger.debug(f"Calculated scaled character positions for {coord_set_name}")
+        
+        elif coord_set_name == "battle_buttons":
+            base_coords = {
+                "to_battle": (1722, 881),  
+            }
+            scaled_coords = {}
+            for name, (x, y) in base_coords.items():
+                scaled_coords[name] = common.scale_coordinates_1080p(x, y)
+            _scaled_coords_cache[coord_set_name] = scaled_coords
+            logger.debug(f"Calculated scaled battle button coordinates for {coord_set_name}")
+        
+        elif coord_set_name == "luxcavation_coords":
+            base_coords = {
+                "latest_stage": (1613, 715),  
+                "exp_drag_start": (397, 48),  
+                "exp_drag_end": (1920, 48),
+                "exp_drag_middle": (1152, 48),
+                "thread_select": (564, 722),  
+                "latest_difficulty": (925, 725),  
+                "squad_scroll_offset": (90, 90), 
+            }
+            scaled_coords = {}
+            for name, (x, y) in base_coords.items():
+                if name == "squad_scroll_offset":
+                    scaled_coords[name] = common.scale_coordinates_1440p(x, y)
+                else:
+                    scaled_x = common.scale_x_1080p(x)
+                    scaled_y = common.scale_y_1080p(y)
+                    scaled_coords[name] = (scaled_x, scaled_y)
+            _scaled_coords_cache[coord_set_name] = scaled_coords
+            logger.debug(f"Calculated scaled luxcavation coordinates for {coord_set_name}")
+    
+    @staticmethod
+    def preload_all_coordinates():
+        coord_sets = ["grace_of_stars", "character_positions", "battle_buttons", "luxcavation_coords"]
+        for coord_set in coord_sets:
+            ScaledCoordinates.get_scaled_coords(coord_set)
+        logger.info(f"Preloaded {len(coord_sets)} coordinate sets")
+
+def _get_gui_values():
+    return {
+        'x_offset': 0,
+        'y_offset': 0,
+        'game_monitor': 1,
+        'skip_restshop': False,
+        'skip_ego_check': False,
+        'skip_ego_fusion': False,
+        'skip_sinner_healing': False,
+        'skip_ego_enhancing': False,
+        'skip_ego_buying': False,
+        'debug_image_matches': False,
+        'hard_mode': False,
+        'convert_images_to_grayscale': True,
+        'reconnection_delay': 6,
+        'reconnect_when_internet_reachable': False,
+        'good_pc_mode': True,
+        'click_delay': 0.5,
+        'claim_on_defeat': False,
+        'retry_count': 0,
+        'pack_refreshes': 7,
+        'stop_after_current_run': False,
+        'convert_enkephalin_to_modules': True,
+        'enable_animations': True,
+        'audio_volume': 0.5,
+        'disable_audio': False,
+        'macro_profile': 'SAFE',
+    }
+
+def _load_shared_vars():
+    logger.info("Loading shared variables from configuration")
+
+    gui_values = _get_gui_values()
+    
+    try:
+        config_path = os.path.join(BASE_PATH, "config", "gui_config.json")
+        
+        if os.path.exists(config_path):
+            logger.debug(f"Loading configuration file: {config_path}")
+            with open(config_path, 'r') as f:
+                config = json.load(f)
+
+            shared_vars_data = config.get('SharedVars', {})
+            if not shared_vars_data:
+                settings_data = config.get('Settings', {})
+                shared_vars_data = {key: settings_data.get(key, gui_values[key]) 
+                                  for key in gui_values.keys() if key in settings_data}
+
+            for var_name, gui_value in gui_values.items():
+                value = shared_vars_data.get(var_name, gui_value)
+                globals()[var_name] = value
+            
+            logger.info("Configuration loaded successfully")
+                
+        else:
+            logger.warning(f"GUI config file not found at {config_path}, using GUI values")
+            for var_name, gui_value in gui_values.items():
+                globals()[var_name] = gui_value
+                
+    except Exception as e:
+        logger.error(f"Error loading shared variables from config: {e}")
+        for var_name, gui_value in gui_values.items():
+            globals()[var_name] = gui_value
+
+def _update_all_exports():
+    global __all__
+    config_vars = list(_get_gui_values().keys())
+    __all__ = config_vars + ['reload_shared_vars']
+
+def reload_shared_vars():
+    _load_shared_vars()
+
+_load_shared_vars()
+_update_all_exports()
+
+ConfigCache.preload_all_configs()
+try:
+    ScaledCoordinates.preload_all_coordinates()
+except (ImportError, AttributeError, TypeError):
+    logger.debug("Deferred coordinate preloading - common module not yet available")
+
+image_threshold_config = ConfigCache.get_config("image_thresholds")

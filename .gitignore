@@ -1,0 +1,16 @@
+# Python junk
+__pycache__/
+*.py[cod]
+
+# local virtual environment
+.venv
+env/
+venv/
+
+# Windows junk
+Thumbs.db
+# Build artifacts
+all data/build/
+all data/dist/
+release/
+*.zip
